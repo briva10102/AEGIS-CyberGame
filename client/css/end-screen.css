@@ -1,0 +1,242 @@
+/* =========================================================
+   AEGIS-7 — MISSION DEBRIEF / END SCREEN
+   ========================================================= */
+
+#screen-end {
+    display: none;
+
+    min-height: calc(100vh - 65px);
+
+    align-items: center;
+    justify-content: center;
+
+    position: relative;
+}
+
+#screen-end.active-screen {
+    display: flex;
+}
+
+#screen-end::before {
+    content: "";
+
+    position: absolute;
+
+    width: 520px;
+    height: 520px;
+
+    border: 1px solid rgba(56, 217, 255, .06);
+    border-radius: 50%;
+
+    box-shadow:
+        0 0 0 55px rgba(56, 217, 255, .012),
+        0 0 0 110px rgba(56, 217, 255, .008);
+}
+
+.end-card {
+    position: relative;
+    z-index: 2;
+
+    width: min(650px, 92vw);
+
+    padding: 48px;
+
+    background:
+        linear-gradient(145deg,
+            rgba(10, 25, 43, .94),
+            rgba(3, 9, 18, .96));
+
+    border: 1px solid rgba(56, 217, 255, .35);
+
+    text-align: center;
+
+    box-shadow:
+        0 30px 100px rgba(0, 0, 0, .6),
+        0 0 70px rgba(56, 217, 255, .08);
+}
+
+.end-card h1 {
+    font-size: clamp(2rem, 5vw, 3.2rem);
+    letter-spacing: 3px;
+    margin-bottom: 8px;
+
+    text-shadow: 0 0 30px rgba(56, 217, 255, .2);
+}
+
+.end-card h2 {
+    margin-bottom: 32px;
+
+    color: var(--cyan);
+
+    font-family: var(--font-mono);
+    font-size: .8rem;
+    font-weight: 400;
+    letter-spacing: 3px;
+}
+
+.stats-summary {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+
+    margin-bottom: 30px;
+
+    text-align: left;
+
+    background: rgba(0, 0, 0, .24);
+
+    border: 1px solid var(--line);
+}
+
+.stat-line {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    padding: 14px 17px;
+
+    color: var(--muted);
+
+    font-family: var(--font-mono);
+    font-size: .68rem;
+
+    border-bottom: 1px solid rgba(90, 170, 255, .08);
+}
+
+.stat-line:last-child {
+    border-bottom: none;
+}
+
+.stat-line strong {
+    color: var(--text);
+    font-size: .8rem;
+}
+
+.stat-line.highlight {
+    padding: 18px;
+
+    color: var(--cyan);
+
+    background: rgba(56, 217, 255, .045);
+
+    border-top: 1px solid rgba(56, 217, 255, .2);
+
+    font-size: .75rem;
+}
+
+.stat-line.highlight strong {
+    color: var(--cyan);
+    font-size: 1.15rem;
+
+    text-shadow: 0 0 15px rgba(56, 217, 255, .45);
+}
+
+/* ---------- BOSS ---------- */
+
+.boss-layer {
+    margin-top: 20px;
+
+    padding: 20px;
+
+    background:
+        radial-gradient(circle at 50% 40%,
+            rgba(255, 55, 95, .08),
+            transparent 45%),
+        rgba(5, 8, 16, .96);
+
+    border: 1px solid rgba(255, 85, 119, .4);
+
+    box-shadow:
+        0 0 40px rgba(255, 85, 119, .06),
+        inset 0 0 40px rgba(255, 85, 119, .025);
+}
+
+.boss-hud {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    gap: 20px;
+
+    margin-bottom: 14px;
+}
+
+.boss-title {
+    color: var(--red);
+
+    font-family: var(--font-mono);
+    font-size: .72rem;
+    font-weight: 600;
+    letter-spacing: 1px;
+
+    text-shadow: 0 0 12px rgba(255, 85, 119, .45);
+}
+
+.boss-hp-bar {
+    width: 300px;
+    height: 8px;
+
+    background: rgba(255, 255, 255, .06);
+
+    border: 1px solid rgba(255, 85, 119, .2);
+
+    overflow: hidden;
+}
+
+.boss-hp-fill {
+    height: 100%;
+
+    background: linear-gradient(90deg,
+            #a51f42,
+            var(--red));
+
+    box-shadow: 0 0 15px rgba(255, 85, 119, .65);
+
+    transition: width .3s ease;
+}
+
+#bossCombatCanvas {
+    display: block;
+
+    width: 100%;
+    max-width: 900px;
+    height: auto;
+
+    margin: 0 auto;
+
+    background:
+        radial-gradient(circle at center,
+            rgba(34, 75, 120, .08),
+            #02050b 65%);
+
+    border: 1px solid rgba(56, 217, 255, .12);
+}
+
+.boss-controls {
+    margin-top: 16px;
+
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+
+    gap: 10px;
+}
+
+@media (max-width: 650px) {
+    .end-card {
+        padding: 30px 20px;
+    }
+
+    .boss-hud {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .boss-hp-bar {
+        width: 100%;
+    }
+
+    .stat-line {
+        gap: 20px;
+    }
+}

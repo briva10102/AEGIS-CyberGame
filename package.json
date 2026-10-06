@@ -1,0 +1,21 @@
+{
+    "name": "aegis-7-orbital-breach",
+    "version": "1.0.0",
+    "description": "Two-Player Cooperative Cybersecurity Game for MOSAIC 2026",
+    "main": "server/server.js",
+    "scripts": {
+        "start": "node server/server.js"
+    },
+    "dependencies": {
+        "express": "^4.19.2",
+        "ws": "^8.17.0"
+    },
+    "keywords": [
+        "cybersecurity",
+        "multiplayer",
+        "cooperative",
+        "canvas-game"
+    ],
+    "author": "AEGIS-7 Dev Team / Forked from TheGhostPacket",
+    "license": "MIT"
+}

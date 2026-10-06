@@ -1,0 +1,814 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>AEGIS-7: ORBITAL BREACH — MOSAIC 2026</title>
+
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/systems.css">
+    <link rel="stylesheet" href="css/cyber.css">
+    <link rel="stylesheet" href="css/end-screen.css">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=Inter:wght@300;400;600;800&display=swap"
+        rel="stylesheet">
+
+    <style>
+        /* =========================================================
+           PUBLIC ROOM UI
+           Kept local to index.html so existing CSS remains untouched.
+           ========================================================= */
+
+        .room-entry-panel {
+            margin: 24px auto;
+            width: min(680px, 92vw);
+            padding: 24px;
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            background: rgba(0, 0, 0, 0.25);
+            text-align: center;
+        }
+
+        .room-entry-title {
+            font-family: var(--font-mono);
+            font-size: 0.8rem;
+            letter-spacing: 0.14em;
+            color: var(--text-muted);
+            margin-bottom: 16px;
+        }
+
+        .room-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .room-code-input {
+            width: 170px;
+            min-height: 44px;
+            padding: 10px 14px;
+            box-sizing: border-box;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            background: rgba(0, 0, 0, 0.45);
+            color: #fff;
+            font-family: var(--font-mono);
+            font-size: 1rem;
+            letter-spacing: 0.16em;
+            text-align: center;
+            text-transform: uppercase;
+            outline: none;
+        }
+
+        .room-code-input:focus {
+            border-color: var(--accent-cyan);
+        }
+
+        .room-code-display {
+            margin: 20px auto;
+            padding: 14px 20px;
+            width: fit-content;
+            min-width: 170px;
+            border: 1px solid rgba(0, 230, 118, 0.35);
+            background: rgba(0, 230, 118, 0.05);
+            text-align: center;
+        }
+
+        .room-code-label {
+            display: block;
+            font-family: var(--font-mono);
+            font-size: 0.65rem;
+            letter-spacing: 0.16em;
+            color: var(--text-muted);
+            margin-bottom: 6px;
+        }
+
+        #display-room-code {
+            display: block;
+            font-family: var(--font-mono);
+            font-size: 1.8rem;
+            font-weight: 600;
+            letter-spacing: 0.22em;
+            color: var(--accent-green);
+        }
+
+        .room-instruction {
+            margin: 8px 0 0;
+            font-size: 0.78rem;
+            color: var(--text-muted);
+        }
+
+        .connection-indicator {
+            position: fixed;
+            right: 14px;
+            bottom: 12px;
+            z-index: 500;
+            font-family: var(--font-mono);
+            font-size: 0.65rem;
+            letter-spacing: 0.12em;
+            color: var(--accent-green);
+            opacity: 0.75;
+            pointer-events: none;
+        }
+
+        #role-selection-area {
+            display: none;
+        }
+
+        @media (max-width: 600px) {
+            .room-actions {
+                flex-direction: column;
+            }
+
+            .room-code-input {
+                width: min(260px, 80vw);
+            }
+
+            .room-code-display {
+                min-width: 140px;
+            }
+
+            #display-room-code {
+                font-size: 1.45rem;
+            }
+        }
+    </style>
+</head>
+
+
+<body class="theme-space">
+
+    <!-- CONNECTION STATUS -->
+
+    <div class="connection-indicator">
+        CORE LINK:
+        <span id="connection-status">CONNECTING...</span>
+    </div>
+
+
+    <!-- HUD HEADER -->
+
+    <header id="global-hud" class="hidden">
+
+        <div class="hud-left">
+
+            <span class="station-tag">
+                AEGIS-7 // ORBITAL DEFENSE PLATFORM
+            </span>
+
+            <span id="role-badge" class="badge">
+                ROLE UNASSIGNED
+            </span>
+
+        </div>
+
+        <div class="hud-center">
+
+            <div id="mission-timer" class="timer">
+                03:00
+            </div>
+
+        </div>
+
+        <div class="hud-right">
+
+            <button id="btn-hint" class="hud-btn">
+                NEED A HINT?
+                (<span id="hint-count">0</span>)
+            </button>
+
+            <button id="btn-audio" class="hud-btn">
+                AUDIO: ON
+            </button>
+
+        </div>
+
+    </header>
+
+
+    <!-- =========================================================
+         SCREEN 1: SPLASH
+         ========================================================= -->
+
+    <section id="screen-splash" class="active-screen">
+
+        <div class="stars-bg"></div>
+
+        <div class="splash-card">
+
+            <div class="title-eyebrow">
+                MOSAIC 2026 — TWO-PLAYER COOPERATIVE MISSION
+            </div>
+
+            <h1 class="glitch-title">
+                AEGIS-7
+            </h1>
+
+            <h2 class="sub-title">
+                ORBITAL BREACH
+            </h2>
+
+            <p class="tagline">
+                Two Operators. One Station. Three Minutes.
+            </p>
+
+
+            <div class="briefing-box">
+
+                <p>
+                    A catastrophic polymorphic cyberattack
+                    has infiltrated the station core.
+                </p>
+
+                <p>
+                    Connect two separate devices using
+                    a mission room code. Verbal coordination
+                    is mandatory to isolate, trace, and
+                    eradicate the hostile APT threat.
+                </p>
+
+            </div>
+
+
+            <button id="btn-splash-start" class="primary-btn">
+                ENTER MISSION LOBBY
+            </button>
+
+        </div>
+
+    </section>
+
+
+    <!-- =========================================================
+         SCREEN 2: LOBBY & ROOM / ROLE SELECTION
+         ========================================================= -->
+
+    <section id="screen-lobby" class="screen-view">
+
+        <div class="panel-container">
+
+            <h2>
+                CONNECT TWO OPERATORS
+            </h2>
+
+            <p class="section-sub">
+                Create a mission room or join your partner
+                using the same four-character code.
+            </p>
+
+
+            <!-- ROOM CREATION / JOIN -->
+
+            <div id="room-entry-panel" class="room-entry-panel">
+
+                <div class="room-entry-title">
+                    MISSION ROOM
+                </div>
+
+                <div class="room-actions">
+
+                    <button id="btn-create-room" class="primary-btn">
+                        CREATE NEW ROOM
+                    </button>
+
+                    <span style="
+                        font-family: var(--font-mono);
+                        color: var(--text-muted);
+                        font-size: 0.7rem;
+                    ">
+                        OR
+                    </span>
+
+                    <input id="room-code-input" class="room-code-input" maxlength="4" autocomplete="off"
+                        spellcheck="false" placeholder="CODE" aria-label="Mission room code">
+
+                    <button id="btn-join-room" class="primary-btn">
+                        JOIN ROOM
+                    </button>
+
+                </div>
+
+                <p class="room-instruction">
+                    Player 1 creates the room.
+                    Player 2 enters the displayed code.
+                </p>
+
+            </div>
+
+
+            <!-- ACTIVE ROOM -->
+
+            <div id="role-selection-area">
+
+                <div class="room-code-display">
+
+                    <span class="room-code-label">
+                        MISSION ROOM CODE
+                    </span>
+
+                    <span id="display-room-code">
+                        ----
+                    </span>
+
+                </div>
+
+                <div id="player-count" style="
+                        text-align: center;
+                        margin-bottom: 18px;
+                        font-family: var(--font-mono);
+                        font-size: 0.7rem;
+                        color: var(--text-muted);
+                        letter-spacing: 0.12em;
+                    ">
+                    0/2 OPERATORS CONNECTED
+                </div>
+
+
+                <div class="role-grid">
+
+                    <!-- ROLE 1 -->
+
+                    <div class="role-card" id="card-systems">
+
+                        <div class="role-header">
+
+                            <span class="op-num">
+                                OPERATOR 01
+                            </span>
+
+                            <h3>
+                                SYSTEMS OPERATOR
+                            </h3>
+
+                        </div>
+
+                        <p class="role-desc">
+                            Controls physical space station
+                            architecture: power routing,
+                            life support modules, kinetic
+                            targeting batteries, and system
+                            quarantines.
+                        </p>
+
+                        <div class="status-indicator" id="status-systems">
+                            WAITING FOR OPERATOR...
+                        </div>
+
+                        <button id="btn-select-systems" class="select-role-btn">
+                            ASSIGN ROLE
+                        </button>
+
+                    </div>
+
+
+                    <!-- ROLE 2 -->
+
+                    <div class="role-card" id="card-cyber">
+
+                        <div class="role-header">
+
+                            <span class="op-num">
+                                OPERATOR 02
+                            </span>
+
+                            <h3>
+                                CYBER ANALYST
+                            </h3>
+
+                        </div>
+
+                        <p class="role-desc">
+                            Controls tactical cybersecurity
+                            SOC: telemetry monitoring,
+                            packet analysis, signature
+                            identification, and firewall
+                            coordinate tracking.
+                        </p>
+
+                        <div class="status-indicator" id="status-cyber">
+                            WAITING FOR OPERATOR...
+                        </div>
+
+                        <button id="btn-select-cyber" class="select-role-btn">
+                            ASSIGN ROLE
+                        </button>
+
+                    </div>
+
+                </div>
+
+
+                <div class="lobby-action-bar">
+
+                    <button id="btn-toggle-ready" class="ready-btn" disabled>
+                        CONFIRM READINESS
+                    </button>
+
+                    <div id="lobby-message">
+                        Select a role after joining a mission room.
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- =========================================================
+         SCREEN 3: GAMEPLAY TERMINAL
+         ========================================================= -->
+
+    <main id="screen-game" class="screen-view">
+
+
+        <!-- SYSTEM OPERATOR VIEW -->
+
+        <div id="systems-operator-view" class="role-view hidden">
+
+            <div class="view-header">
+
+                <h2>
+                    STATION HARDWARE DIAGNOSTICS & HARDWARE CONTROLS
+                </h2>
+
+                <div class="comm-prompt" id="sys-prompt">
+                    AWAITING THREAT IDENTIFICATION
+                    FROM CYBER ANALYST...
+                </div>
+
+            </div>
+
+
+            <div class="systems-grid">
+
+                <!-- POWER -->
+
+                <div class="sys-module" id="mod-POWER">
+
+                    <div class="mod-top">
+
+                        <span class="mod-name">
+                            POWER GRID
+                        </span>
+
+                        <span class="mod-stat stat-ok">
+                            NOMINAL
+                        </span>
+
+                    </div>
+
+                    <div class="progress-bar">
+
+                        <div class="fill f-80"></div>
+
+                    </div>
+
+                    <div class="mod-actions">
+
+                        <button class="sys-btn" onclick="Game.sendSystemAction('ISOLATE', {systemId: 'POWER'})">
+                            ISOLATE
+                        </button>
+
+                        <button class="sys-btn" onclick="Game.sendSystemAction('REROUTE', {systemId: 'POWER'})">
+                            REROUTE
+                        </button>
+
+                    </div>
+
+                </div>
+
+
+                <!-- OXYGEN -->
+
+                <div class="sys-module" id="mod-OXYGEN">
+
+                    <div class="mod-top">
+
+                        <span class="mod-name">
+                            OXYGEN & LIFE SUPPORT
+                        </span>
+
+                        <span class="mod-stat stat-ok">
+                            NOMINAL
+                        </span>
+
+                    </div>
+
+                    <div class="progress-bar">
+
+                        <div class="fill f-100"></div>
+
+                    </div>
+
+                    <div class="mod-actions">
+
+                        <button class="sys-btn" onclick="Game.sendSystemAction('ISOLATE', {systemId: 'OXYGEN'})">
+                            ISOLATE
+                        </button>
+
+                        <button class="sys-btn" onclick="Game.sendSystemAction('REROUTE', {systemId: 'OXYGEN'})">
+                            REROUTE
+                        </button>
+
+                    </div>
+
+                </div>
+
+
+                <!-- COMMS -->
+
+                <div class="sys-module" id="mod-COMMS">
+
+                    <div class="mod-top">
+
+                        <span class="mod-name">
+                            COMMS ARRAY
+                        </span>
+
+                        <span class="mod-stat stat-warn">
+                            UNSTABLE
+                        </span>
+
+                    </div>
+
+                    <div class="progress-bar">
+
+                        <div class="fill f-40"></div>
+
+                    </div>
+
+                    <div class="mod-actions">
+
+                        <button class="sys-btn" onclick="Game.sendSystemAction('ISOLATE', {systemId: 'COMMS'})">
+                            ISOLATE
+                        </button>
+
+                        <button class="sys-btn" onclick="Game.sendSystemAction('REROUTE', {systemId: 'COMMS'})">
+                            REROUTE
+                        </button>
+
+                    </div>
+
+                </div>
+
+
+                <!-- PROPULSION -->
+
+                <div class="sys-module" id="mod-PROPULSION">
+
+                    <div class="mod-top">
+
+                        <span class="mod-name">
+                            PROPULSION JETS
+                        </span>
+
+                        <span class="mod-stat stat-ok">
+                            NOMINAL
+                        </span>
+
+                    </div>
+
+                    <div class="progress-bar">
+
+                        <div class="fill f-90"></div>
+
+                    </div>
+
+                    <div class="mod-actions">
+
+                        <button class="sys-btn" onclick="Game.sendSystemAction('ISOLATE', {systemId: 'PROPULSION'})">
+                            ISOLATE
+                        </button>
+
+                        <button class="sys-btn" onclick="Game.sendSystemAction('REROUTE', {systemId: 'PROPULSION'})">
+                            REROUTE
+                        </button>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <div id="systems-dynamic-panel" class="dynamic-panel">
+            </div>
+
+        </div>
+
+
+        <!-- CYBER ANALYST VIEW -->
+
+        <div id="cyber-analyst-view" class="role-view hidden">
+
+            <div class="view-header">
+
+                <h2>
+                    TACTICAL SOC TOPOLOGY & TELEMETRY STREAM
+                </h2>
+
+                <div class="comm-prompt" id="cyber-prompt">
+                    ALERT: PACKET SURGE DETECTED.
+                    COMMUNICATE COMPROMISED NODE!
+                </div>
+
+            </div>
+
+
+            <div class="cyber-grid">
+
+                <div class="panel-box" id="node-topology">
+
+                    <h3>
+                        NETWORK TOPOLOGY MATRIX
+                    </h3>
+
+                    <div class="nodes-list" id="nodes-container">
+                    </div>
+
+                </div>
+
+
+                <div class="panel-box" id="soc-inspector">
+
+                    <h3>
+                        TELEMETRY DEEP INSPECTOR
+                    </h3>
+
+                    <div id="inspector-output" class="inspector-feed">
+
+                        Click on an anomalous node
+                        in the network matrix to decode
+                        deep packet payload headers...
+
+                    </div>
+
+                    <div id="cyber-actions-panel" class="cyber-actions">
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- BOSS CANVAS COMBAT -->
+
+        <div id="boss-battle-layer" class="boss-layer hidden">
+
+            <div class="boss-hud">
+
+                <div class="boss-title">
+                    ALERT: APT-2026 APEX INTRUDER CORE IDENTIFIED
+                </div>
+
+                <div class="boss-hp-bar">
+
+                    <div id="boss-hp-fill" class="boss-hp-fill" style="width: 100%;">
+                    </div>
+
+                </div>
+
+            </div>
+
+            <canvas id="bossCombatCanvas" width="900" height="420">
+            </canvas>
+
+            <div class="boss-controls" id="boss-action-bar">
+            </div>
+
+        </div>
+
+    </main>
+
+
+    <!-- =========================================================
+         SCREEN 4: END MISSION
+         ========================================================= -->
+
+    <section id="screen-end" class="screen-view">
+
+        <div class="end-card">
+
+            <h1 id="end-title">
+                AEGIS-7 SECURED
+            </h1>
+
+            <h2 id="end-subtitle">
+                MISSION COMPLETE
+            </h2>
+
+
+            <div class="stats-summary">
+
+                <div class="stat-line">
+                    <span>TIME ELAPSED:</span>
+                    <strong id="stat-time">
+                        02:18
+                    </strong>
+                </div>
+
+                <div class="stat-line">
+                    <span>HINTS ACCESSED:</span>
+                    <strong id="stat-hints">
+                        0
+                    </strong>
+                </div>
+
+                <div class="stat-line">
+                    <span>ERRORS RECORDED:</span>
+                    <strong id="stat-errors">
+                        0
+                    </strong>
+                </div>
+
+                <div class="stat-line">
+                    <span>THREATS ERADICATED:</span>
+                    <strong id="stat-threats">
+                        4
+                    </strong>
+                </div>
+
+                <div class="stat-line highlight">
+
+                    <span>
+                        TEAM RATING SCORE:
+                    </span>
+
+                    <strong id="stat-score">
+                        1080
+                    </strong>
+
+                </div>
+
+            </div>
+
+
+            <button id="btn-replay" class="primary-btn">
+                RESET MISSION DECK
+            </button>
+
+        </div>
+
+    </section>
+
+
+    <!-- =========================================================
+         HINT MODAL
+         ========================================================= -->
+
+    <div id="modal-hint" class="modal hidden">
+
+        <div class="modal-box">
+
+            <h3>
+                TACTICAL ASSISTANCE TERMINAL
+            </h3>
+
+            <p id="hint-text">
+                Inspect anomalous node packet counts
+                compared to default telemetry baselines.
+            </p>
+
+            <div class="modal-actions">
+
+                <button id="btn-close-hint" class="hud-btn">
+                    CLOSE
+                </button>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- =========================================================
+         JAVASCRIPT
+         ========================================================= -->
+
+    <script src="js/audio.js"></script>
+
+    <script src="js/connection.js"></script>
+
+    <script src="js/roles/systemsOperator.js"></script>
+
+    <script src="js/roles/cyberAnalyst.js"></script>
+
+    <script src="js/puzzles/bossCombat.js"></script>
+
+    <script src="js/game.js"></script>
+
+</body>
+
+</html>
